@@ -1,8 +1,10 @@
 package com.example.java4.RestControllers;
+import com.example.java4.entitiesLv1.ScoreBoard;
 import com.example.java4.repositories.ScoreRepository;
 import com.example.java4.requestStore.KhachHangStore;
 import com.example.java4.entitiesLv1.KhachHang;
 import com.example.java4.repositories.KhachHangRepository;
+import com.example.java4.requestStore.ScoreBoardStore;
 import com.example.java4.requestUpdate.KhachHangUpdate;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +31,16 @@ public class ScoreBoardController {
     }
     @CrossOrigin
     @GetMapping("/index")
-    public ResponseEntity<List<KhachHang>> index(@RequestParam("page")Optional<Integer> pageParam) {
+    public ResponseEntity<List<ScoreBoard>> index(@RequestParam("page")Optional<Integer> pageParam) {
         int page = pageParam.orElse(1);
         Pageable pageable = PageRequest.of(page-1,20);
-        return ResponseEntity.ok(khRepo.findByTrangThai(1,pageable).getContent()) ;
+        return ResponseEntity.ok(scoreRepo.getGloryBoard(pageable).getContent()) ;
     }
 
     @CrossOrigin
     @GetMapping("count")
     public ResponseEntity<Integer> getCount() {
-        return ResponseEntity.ok(khRepo.getCount());
+        return ResponseEntity.ok(scoreRepo.getCountUser());
     }
     @CrossOrigin
     @GetMapping("/detail/{id}")
@@ -49,7 +51,7 @@ public class ScoreBoardController {
     @CrossOrigin
     @PostMapping("save")
     public ResponseEntity<Boolean> save(
-            @RequestBody @Valid KhachHangStore newKH,
+            @RequestBody @Valid ScoreBoardStore newScore,
             BindingResult result
     ) {
         if (result.hasErrors()) {
@@ -58,16 +60,11 @@ public class ScoreBoardController {
         } else {
             //conduct ma
             LocalDateTime localNow = LocalDateTime.now();
-            String ma = "KH"+(khRepo.getCount()+1);
-            KhachHang kh = new KhachHang();
-            kh.setMa(ma);
-            kh.setHoTen(newKH.getHoTen());
-            kh.setNgaySinh(newKH.getNgaySinh());
-            kh.setSdt(newKH.getSdt());
-            kh.setMatKhau(newKH.getMatKhau());
-            kh.setTrangThai(Integer.valueOf(newKH.getTrangThai()));
-            kh.setNgayTao(localNow);
-            khRepo.save(kh);
+            ScoreBoard scoreBoard = new ScoreBoard();
+            scoreBoard.setUserName(newScore.getUserName());
+            scoreBoard.setScore(Integer.valueOf(newScore.getScore()));
+            scoreBoard.setDayTime(localNow);
+            scoreRepo.save(scoreBoard);
             return ResponseEntity.ok(true);
         }
     }

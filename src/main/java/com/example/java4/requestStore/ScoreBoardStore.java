@@ -6,5 +6,5 @@ import lombok.*;
 @Setter
 public class ScoreBoardStore {
     private String userName;
-    private Integer score;
+    private String score;
 }
