@@ -25,3 +25,4 @@ public class ChucVu {
     @Column(name="NgayTao")
     private LocalDateTime ngayTao;
 }
+//new git
